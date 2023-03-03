@@ -5,6 +5,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { CommonModule } from './common/common.module';
+import { JwtModule } from './jwt/jwt.module';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 
@@ -21,12 +22,14 @@ import { UsersModule } from './users/users.module';
         DB_USERNAME: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
         DB_NAME: Joi.string().required(),
+        PRIVATE_KEY: Joi.string().required(),
       }),
     }),
     GraphQLModule.forRoot({
       driver: ApolloDriver,
       autoSchemaFile: true,
     }),
+    // dynamic module
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -39,7 +42,10 @@ import { UsersModule } from './users/users.module';
       entities: [User],
     }),
     UsersModule,
-    CommonModule,
+    CommonModule, // static module
+    JwtModule.forRoot({
+      privateKey: process.env.PRIVATE_KEY,
+    }), // dynamic module
   ],
   controllers: [],
   providers: [],
