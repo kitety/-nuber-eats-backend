@@ -13,8 +13,9 @@ const config_1 = require("@nestjs/config");
 const graphql_1 = require("@nestjs/graphql");
 const typeorm_1 = require("@nestjs/typeorm");
 const Joi = require("joi");
-const restaurants_entity_1 = require("./restaurants/entities/restaurants.entity");
-const restaurants_module_1 = require("./restaurants/restaurants.module");
+const common_module_1 = require("./common/common.module");
+const user_entity_1 = require("./users/entities/user.entity");
+const users_module_1 = require("./users/users.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -46,9 +47,10 @@ AppModule = __decorate([
                 database: process.env.DB_NAME,
                 synchronize: process.env.NODE_ENV !== 'prod',
                 logging: true,
-                entities: [restaurants_entity_1.Restaurant],
+                entities: [user_entity_1.User],
             }),
-            restaurants_module_1.RestaurantsModule,
+            users_module_1.UsersModule,
+            common_module_1.CommonModule,
         ],
         controllers: [],
         providers: [],
