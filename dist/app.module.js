@@ -13,11 +13,17 @@ const config_1 = require("@nestjs/config");
 const graphql_1 = require("@nestjs/graphql");
 const typeorm_1 = require("@nestjs/typeorm");
 const Joi = require("joi");
-const common_module_1 = require("./common/common.module");
+const jwt_middleware_1 = require("./jwt/jwt.middleware");
 const jwt_module_1 = require("./jwt/jwt.module");
 const user_entity_1 = require("./users/entities/user.entity");
 const users_module_1 = require("./users/users.module");
 let AppModule = class AppModule {
+    configure(consumer) {
+        consumer.apply(jwt_middleware_1.JwtMiddleware).forRoutes({
+            path: '*',
+            method: common_1.RequestMethod.ALL,
+        });
+    }
 };
 AppModule = __decorate([
     (0, common_1.Module)({
@@ -39,6 +45,7 @@ AppModule = __decorate([
             graphql_1.GraphQLModule.forRoot({
                 driver: apollo_1.ApolloDriver,
                 autoSchemaFile: true,
+                context: ({ req }) => ({ user: req['user'] }),
             }),
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'postgres',
@@ -51,11 +58,10 @@ AppModule = __decorate([
                 logging: true,
                 entities: [user_entity_1.User],
             }),
-            users_module_1.UsersModule,
-            common_module_1.CommonModule,
             jwt_module_1.JwtModule.forRoot({
                 privateKey: process.env.PRIVATE_KEY,
             }),
+            users_module_1.UsersModule,
         ],
         controllers: [],
         providers: [],

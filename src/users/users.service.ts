@@ -7,7 +7,7 @@ import { LoginInput } from './dtos/login.dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
     private readonly jwt: JwtService,
@@ -69,5 +69,8 @@ export class UsersService {
     }
     //check if the password is correct
     //make a JWT and give it to the user
+  }
+  async findById(id: number): Promise<User> {
+    return this.users.findOne({ where: { id } });
   }
 }
