@@ -53,11 +53,10 @@ export class UserService {
         select: ['password', 'id'],
       });
 
-      if (!user || 1) {
+      if (!user) {
         return {
           ok: false,
           error: 'User not found',
-          token: '1',
         };
       }
       const passwordCorrect = await user.checkPassword(password);
