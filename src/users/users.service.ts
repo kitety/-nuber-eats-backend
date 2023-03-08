@@ -67,8 +67,6 @@ export class UserService {
         error,
       };
     }
-    //check if the password is correct
-    //make a JWT and give it to the user
   }
   async findById(id: number): Promise<User> {
     return this.users.findOne({ where: { id } });

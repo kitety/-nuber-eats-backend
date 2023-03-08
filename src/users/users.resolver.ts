@@ -7,6 +7,7 @@ import {
   CreateAccountOutput,
 } from './dtos/create-account.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
+import { UserProfileInput, UserProfileOutput } from './dtos/user-profile.dto';
 import { User } from './entities/user.entity';
 import { UserService } from './users.service';
 
@@ -48,5 +49,27 @@ export class UsersResolver {
   @UseGuards(AuthGuard)
   me(@AuthUser() user: User) {
     return user;
+  }
+
+  @Query(() => UserProfileOutput)
+  @UseGuards(AuthGuard)
+  async userProfile(
+    @Args() userProfileInput: UserProfileInput,
+  ): Promise<UserProfileOutput> {
+    try {
+      const user = await this.userService.findById(userProfileInput.userId);
+      if (!user) {
+        throw new Error();
+      }
+      return {
+        ok: Boolean(user),
+        user,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: 'User Not Found',
+      };
+    }
   }
 }
