@@ -9,6 +9,7 @@ import {
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
 import { UserProfileInput, UserProfileOutput } from './dtos/user-profile.dto';
+import { VerifyEmailInput, VerifyEmailOutput } from './dtos/verifi-email.dto';
 import { User } from './entities/user.entity';
 import { UserService } from './users.service';
 
@@ -40,11 +41,7 @@ export class UsersResolver {
   }
   @Mutation(() => LoginOutput)
   async login(@Args('input') loginInput: LoginInput): Promise<LoginOutput> {
-    try {
-      return this.userService.login(loginInput);
-    } catch (error) {
-      return { ok: false, error };
-    }
+    return this.userService.login(loginInput);
   }
   @Query(() => User)
   @UseGuards(AuthGuard)
@@ -84,6 +81,23 @@ export class UsersResolver {
       await this.userService.editProfile(user.id, editProfileInput);
       return {
         ok: true,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  @Mutation(() => VerifyEmailOutput)
+  async verifyEmail(
+    @Args('input') verifyEmailInput: VerifyEmailInput,
+  ): Promise<VerifyEmailOutput> {
+    try {
+      const ok = await this.userService.verifyEmail(verifyEmailInput.code);
+      return {
+        ok,
       };
     } catch (error) {
       return {
