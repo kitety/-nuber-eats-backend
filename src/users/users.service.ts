@@ -1,12 +1,13 @@
-import { VerifyEmailOutput } from './dtos/verifi-email.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from 'src/jwt/jwt.service';
+import { MailService } from 'src/mail/mail.service';
 import { Repository } from 'typeorm';
 import { CreateAccountInput } from './dtos/create-account.dto';
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
 import { UserProfileOutput } from './dtos/user-profile.dto';
+import { VerifyEmailOutput } from './dtos/verifi-email.dto';
 import { User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
 
@@ -17,6 +18,7 @@ export class UserService {
     @InjectRepository(Verification)
     private readonly verifications: Repository<Verification>,
     private readonly jwt: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   async createAccount({
@@ -35,11 +37,12 @@ export class UserService {
         this.users.create({ email, password, role }),
       );
       // generate verification code
-      await this.verifications.save(
+      const verification = await this.verifications.save(
         this.verifications.create({
           user,
         }),
       );
+      await this.mailService.sendVerifiedEmail(user.email, verification.code);
 
       return { ok: true };
     } catch (e) {
@@ -109,11 +112,12 @@ export class UserService {
         user.email = email;
         user.verified = false;
         // generate verification code
-        await this.verifications.save(
+        const verification = await this.verifications.save(
           this.verifications.create({
             user,
           }),
         );
+        await this.mailService.sendVerifiedEmail(user.email, verification.code);
       }
       if (password) {
         user.password = password;
@@ -135,6 +139,7 @@ export class UserService {
         console.log('verification: ', verification);
         verification.user.verified = true;
         await this.users.save(verification.user);
+        await this.verifications.delete(verification.id);
         return { ok: true };
       }
       return { ok: false, error: 'Verification not found.' };

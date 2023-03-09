@@ -18,6 +18,7 @@ const jwt_module_1 = require("./jwt/jwt.module");
 const user_entity_1 = require("./users/entities/user.entity");
 const verification_entity_1 = require("./users/entities/verification.entity");
 const users_module_1 = require("./users/users.module");
+const mail_module_1 = require("./mail/mail.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(jwt_middleware_1.JwtMiddleware).forRoutes({
@@ -41,6 +42,9 @@ AppModule = __decorate([
                     DB_PASSWORD: Joi.string().required(),
                     DB_NAME: Joi.string().required(),
                     PRIVATE_KEY: Joi.string().required(),
+                    MAILGUN_API_KEY: Joi.string().required(),
+                    MAILGUN_DOMAIN: Joi.string().required(),
+                    MAILGUN_FROM_EMAIL: Joi.string().required(),
                 }),
             }),
             graphql_1.GraphQLModule.forRoot({
@@ -63,6 +67,11 @@ AppModule = __decorate([
                 privateKey: process.env.PRIVATE_KEY,
             }),
             users_module_1.UsersModule,
+            mail_module_1.MailModule.forRoot({
+                apiKey: process.env.MAILGUN_API_KEY,
+                domain: process.env.MAILGUN_DOMAIN,
+                fromEmail: process.env.MAILGUN_FROM_EMAIL,
+            }),
         ],
         controllers: [],
         providers: [],
