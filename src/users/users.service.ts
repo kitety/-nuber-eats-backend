@@ -42,6 +42,8 @@ export class UserService {
           user,
         }),
       );
+      console.log('verification: ', verification);
+
       await this.mailService.sendVerifiedEmail(user.email, verification.code);
 
       return { ok: true };
