@@ -42,7 +42,6 @@ export class UserService {
           user,
         }),
       );
-      console.log('verification: ', verification);
 
       await this.mailService.sendVerifiedEmail(user.email, verification.code);
 
@@ -135,7 +134,6 @@ export class UserService {
         relations: ['user'],
       });
       if (verification) {
-        console.log('verification: ', verification);
         verification.user.verified = true;
         await this.users.save(verification.user);
         await this.verifications.delete(verification.id);
