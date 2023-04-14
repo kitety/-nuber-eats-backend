@@ -13,6 +13,7 @@ export class MailService {
   ) {
     this.mg = mailgun({ apiKey: options.apiKey, domain: options.domain });
   }
+
   async sendEmail(
     subject: string,
     to: string,
